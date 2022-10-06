@@ -110,7 +110,7 @@ Reputación (p-value: 3.2714025148511657e-19)
 
 🗑️ Drop 2002/2003: Incoherencia comportamiento de las variables clave (YouTube no existía, comportamiento muy a posteriori)
 
-🤥 Outliers: Definimos lógica propia por la cual son outliera aquellos países con más likes y views que su media en esos 18 años y no obtuvieron una proporción de puntos superior a su media en ese mismo perioro (ojeamos resultados y tiene sentido eliminarlos. Drop 50 registros) 
+🤥 Outliers: Definimos lógica propia por la cual son outliers aquellos países con más likes y views que su media en esos 18 años y no obtuvieron una proporción de puntos superior a su media en ese mismo periodo (ojeamos resultados y tiene sentido eliminarlos. Drop 50 registros) 
 
 💻 CatboostRegressor (CTR): iterations = 5 -> R2_train = 0'78, R2_test = 0'76, MSE = 0'007
 
@@ -118,7 +118,7 @@ Reputación (p-value: 3.2714025148511657e-19)
 
 #
 ## SCRAPPEO EN CALIENTE
-#### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las covnersiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
+#### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las conversiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
 
 Recibimos canciones: Usamos websockets y una interfaz web propia.
 
