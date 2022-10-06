@@ -1,0 +1,205 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Eurovision</title>
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- MDB -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.css"
+          rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+<section class="intro">
+  <div class="mask d-flex align-items-center h-100 gradient-custom">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+          <div class="card">
+            <div class="card-body p-5">
+
+              <div class="row d-flex align-items-center">
+                <div class="col-md-6 col-xl-7">
+
+                  <div class="text-center pt-md-5 pb-5 my-md-5" style="padding-right: 24px;">
+                    <i class="fas fa-microphone-lines" style="color: #D6D6D6;"></i>
+                  </div>
+
+                </div>
+                <div class="col-md-6 col-xl-4 text-center">
+
+                  <h2 class="fw-bold mb-4 pb-2">Añade tu canción</h2>
+
+                  <div class="form-outline mb-3">
+                    <input type="text" id="inputSong" class="form-control form-control-lg" />
+                    <label class="form-label" for="inputSong">Canción</label>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    <input type="text" id="inputSinger" class="form-control form-control-lg" />
+                    <label class="form-label" for="inputSinger">Cantante</label>
+                  </div>
+
+                  <div class="form-outline mb-4">
+                    <select class="form-select" id="country" aria-label="Default select example">
+                      <option value="Albania">Albania</option>
+                      <option value="Andorra">Andorra</option>
+                      <option value="Armenia">Armenia</option>
+                      <option value="Australia">Australia</option>
+                      <option value="Austria">Austria</option>
+                      <option value="Azerbaijan">Azerbaijan</option>
+                      <option value="Belarus">Belarus</option>
+                      <option value="Belgium">Belgium</option>
+                      <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                      <option value="Bulgaria">Bulgaria</option>
+                      <option value="Croatia">Croatia</option>
+                      <option value="Cyprus">Cyprus</option>
+                      <option value="Czech Republic">Czech Republic</option>
+                      <option value="Denmark">Denmark</option>
+                      <option value="Estonia">Estonia</option>
+                      <option value="Finland">Finland</option>
+                      <option value="France">France</option>
+                      <option value="Georgia">Georgia</option>
+                      <option value="Germany">Germany</option>
+                      <option value="Greece">Greece</option>
+                      <option value="Hungary">Hungary</option>
+                      <option value="Iceland">Iceland</option>
+                      <option value="Ireland">Ireland</option>
+                      <option value="Israel">Israel</option>
+                      <option value="Italy">Italy</option>
+                      <option value="Latvia">Latvia</option>
+                      <option value="Lithuania">Lithuania</option>
+                      <option value="North Macedonia">North Macedonia</option>
+                      <option value="Malta">Malta</option>
+                      <option value="Monaco">Monaco</option>
+                      <option value="Montenegro">Montenegro</option>
+                      <option value="The Netherlands">The Netherlands</option>
+                      <option value="Norway">Norway</option>
+                      <option value="Poland">Poland</option>
+                      <option value="Portugal">Portugal</option>
+                      <option value="Romania">Romania</option>
+                      <option value="Russia">Russia</option>
+                      <option value="San Marino">San Marino</option>
+                      <option value="Serbia">Serbia</option>
+                      <option value="Slovakia">Slovakia</option>
+                      <option value="Slovenia">Slovenia</option>
+                      <option value="Spain">Spain</option>
+                      <option value="Sweden">Sweden</option>
+                      <option value="Switzerland">Switzerland</option>
+                      <option value="Turkey">Turkey</option>
+                      <option value="Ukraine">Ukraine</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                    </select>
+                  </div>
+
+
+                  <div class="text-center">
+                    <button onclick="sendSong()" class="btn btn-info btn-block btn-lg" href="list.html" role="button">Registrar canción</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.js"
+></script>
+<script>
+  let socket = null;
+  let intervalConnection = null;
+
+  function sendSong() {
+
+    let song = {
+      song: document.getElementById('inputSong').value,
+      singer: document.getElementById('inputSinger').value,
+      country: document.getElementById('country').value,
+    }
+    let message = {
+      type: "SONG_CREATED",
+      value: song
+    }
+    socket.send(JSON.stringify(message))
+    document.location.href = 'list.html'
+  }
+
+  function deleteCountries(countries) {
+    const selectobject = document.getElementById("country");
+    for (let i=0; i<selectobject.length; i++) {
+      console.log(selectobject.options[i].value);
+      if (countries.includes(selectobject.options[i].value)) {
+        selectobject.remove(i);
+        i--;
+      }
+    }
+  }
+
+  function message(event) {
+    const data = JSON.parse(event.data)
+
+    if (data.type === "COUNTRIES_DELETED") {
+      deleteCountries(data.value)
+    }
+  }
+
+  function reconnectSocket() {
+    if(!intervalConnection) {
+      console.log("Trying to reconnect socket")
+      intervalConnection = setInterval(() => {
+        openSocket()
+      }, 5000)
+    }
+  }
+</script>
+<script>
+  function openSocket() {
+    socket = new WebSocket("ws://34.204.67.122:8001");
+
+    socket.onmessage = (event) => {
+      message(event)
+    }
+
+    socket.onerror = () => {
+      reconnectSocket();
+    }
+
+    socket.onclose = () => {
+      reconnectSocket();
+    }
+
+    socket.onopen = () => {
+      if(intervalConnection) {
+        clearInterval(intervalConnection)
+        intervalConnection = null;
+      }
+      console.log("Socket connected!");
+    }
+
+  }
+
+  openSocket();
+</script>
+</body>
+
+</html>
