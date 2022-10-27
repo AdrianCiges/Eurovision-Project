@@ -6,6 +6,7 @@
 # pip install websockets
 # pip install -U scikit-learn
 # pip3 install openpyxl
+# !pip install pytube
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -24,13 +25,19 @@ from operator import itemgetter
 warnings.filterwarnings("ignore")
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.metrics import r2_score as r2
+import pandas as pd
+from catboost import CatBoostRegressor as CTR
+from sklearn.model_selection import train_test_split as tts
 from joblib import Parallel, delayed
 import requests as req
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-import warnings
-warnings.filterwarnings("ignore")
-
+import time
+import asyncio
+import websockets
+import json
+from pytube import YouTube
+import os
 
 
 # driver configuration
@@ -48,53 +55,22 @@ PATH = ChromeDriverManager().install()
 # driver=webdriver.Chrome(PATH) # Defino el Driver
 
 
-# IMPORTACIONES
-import pandas as pd
-from catboost import CatBoostRegressor as CTR
-from sklearn.model_selection import train_test_split as tts
-
-print("Importaciones OK")
-
 # CARGAMOS DATA TO TRAIN
 data = pd.read_excel("./Excels/Data_to_train.xlsx")
 data.drop("Unnamed: 0", axis=1, inplace=True)
-print("Carga Data OK")
 
 # PARTIMOS DATA
 X = data.drop("propo_puntos", axis=1)
 y = data.propo_puntos
 X_train, X_test, y_train, y_test = tts(
-    X, y, train_size=0.8, test_size=0.2, random_state=22
+    X, y, train_size=0.99, test_size=0.01, random_state=22
 )
 X_train.shape, X_test.shape, y_train.shape, y_test.shape
-print("Data partida")
 
 # ENTRENAMOS
-print("Entrenando...")
 ctr = CTR(iterations=5, verbose=False)
 ctr.fit(X_train, y_train)
 y_pred = ctr.predict(X_test)
-print("Modelo entrenado")
-
-# SACAMOS ERRORES
-error = mse(y_test, y_pred, squared=True)
-y_pred = ctr.predict(X_test)
-R2_test = ctr.score(X_test, y_test)
-y_pred = ctr.predict(X_train)
-R2_train = ctr.score(X_train, y_train)
-
-if R2_train > (1.15 * R2_test):
-    print(
-        f"MSE = {error}, R2_train = {R2_train}, R2_test = {R2_test}, OVERFITING (modifica datos)"
-    )
-
-elif R2_train > R2_test:
-    print(f"MSE = {error}, R2_train = {R2_train}, R2_test = {R2_test}, LO NORMAL")
-
-elif R2_train < R2_test:
-    print(
-        f"MSE = {error}, R2_train = {R2_train}, R2_test = {R2_test}, UNDERFITING (dame más datos)"
-    )
 
 
 def row_data(user_songs):
@@ -165,8 +141,7 @@ def get_songs(cancion):
         "The Netherlands": 45,
         "Turkey": 46,
         "Ukraine": 47,
-        "United Kingdom": 48,
-    }
+        "United Kingdom": 48 }
     song = []
     pais = []
     views = []
@@ -316,8 +291,7 @@ def predicciones(user_songs):
         45: 142.5697150556129,
         46: 76.81818181818181,
         47: 63.61367202729045,
-        48: 67.0881239250086,
-    }
+        48: 67.0881239250086}
     tabla0["bet_mean"] = [dictio_odds[c] for c in tabla0["pais"]]
 
     # REORDENO TABLA
@@ -359,15 +333,76 @@ def predicciones(user_songs):
     )
 
     return prediction_result
+    
+def downloadYouTube(cancion):
+    path = 'web/untitled/media'
+    url = ("https://www.youtube.com/results?search_query=" + cancion["song"] +
+            "+" + cancion["singer"] + "+official")
+    link_video = 'https://www.youtube.com/watch?v=' + (req.get(f"{url}")
+            .text).split('/watch?v=')[1].split(',')[0].replace('"', "")
+
+    yt = YouTube(link_video)
+    yt = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+    if not os.path.exists(path):
+        os.makedirs(path)
+    yt.download(path, filename='winner.mp4')
+
+def spotify_access_token():
+    url = "https://accounts.spotify.com/api/token"
+
+    payload=f"grant_type=refresh_token&refresh_token=AQAdp_4ZFLhLDSe3m6hvmqXfxZFWf2TQkfE35br2EGIFQ80N9t8BWihlDx-f21EgtWIff0TY95mEhNiwq_ryerMSIovlWfrd4q2CiWU-UfpP--UhnqeixNB6Wfj797bfV9M"
+    headers = {
+      'Authorization': 'Basic ZjA4ZTdkYjM3NTQzNGYzMjllNzMzMjkzMjIzNWFlOWM6YWE0NGE4YjhmODM4NGViYzhhMmNkMGFiYTY1Zjc4YjM=',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+
+    response = req.request("POST", url, headers=headers, data=payload).json()
+
+    return response['access_token']
+    
+def add_to_playlist(tracks):
+    tracks = list(reversed(tracks))
+    token = spotify_access_token()
+    
+    headers = {
+        "Accept" : "application/json",
+        "Content-Type" : "application/json",
+        "Authorization" : f"Bearer {token}"
+        }
+    
+    
+    params_search = {
+        "type" : "track",
+        "limit":"1"     
+        }
+    uris_raw = []
+    for track in tracks:
+        print(f'adding track {track} to spotify playlist')
+        params_search['q'] = track['song'] + " " + track['singer']
+        
+        try:
+            response = req.get("https://api.spotify.com/v1/search", headers=headers, params=params_search)
+        
+            search_content = json.loads(response.text)
+            uris_raw.append(search_content['tracks']['items'][0]['uri'])
+        except:
+            print(f'No es posible añadir canción {track} en lista de spoty')
+            pass
+        
+
+    uris = ','.join(uris_raw)
+    
+    
+    params_add_track = {
+        "position" : "0",
+        "uris" : uris # La uri de la canción (canciones)
+
+    }
+    playlist_id = "0FNPhJSRpD4mdq0gDEDVWf"
+
+    response = req.post(f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks", headers=headers, params=params_add_track)
 
 
-
-
-
-import time
-import asyncio
-import websockets
-import json
 
 connected = set()
 countries_choosen = []
@@ -392,56 +427,102 @@ async def handler(websocket):
         try:
             async for message in websocket:
                 print("Received message from client: " + message)
-                dictio = json.loads(message)
+                try:
+                    dictio = json.loads(message)
+                except Exception as e:
+                    dictio = []
+                if 'type' in dictio:
+                    if dictio["type"] == "SONG_CREATED":
+                        if 'value' in dictio:
+                            song = dictio['value']
+                            if set(['song', 'singer', 'country', 'manager']).issubset(set(song.keys())) and song['country']:
+                                user_songs.append(song)
+                                countries_choosen.append(song["country"])
+                                send_message = {}
+                                send_message["type"] = "COUNTRIES_DELETED"
+                                send_message["value"] = countries_choosen
+                                websockets.broadcast(connected, json.dumps(send_message))
+                            else:
+                                print('Han intentado hackear...')
+                        else:
+                            print('Han intentado hackear...')
 
-                if dictio["type"] == "SONG_CREATED":
 
-                    song = dictio["value"]
-                    user_songs.append(song)
-                    countries_choosen.append(song["country"])
-                    send_message = {}
-                    send_message["type"] = "COUNTRIES_DELETED"
-                    send_message["value"] = countries_choosen
-                    websockets.broadcast(connected, json.dumps(send_message))
+                    elif dictio["type"] == "PROCESS_SONGS":
 
-                elif dictio["type"] == "PROCESS_SONGS":
-                   	
-                    print("Processing songs...")
+                        print("Processing songs...")
 
-                    result = predicciones(user_songs)
-                    send_message = {}
-                    send_message["type"] = "SONGS_PROCESSED"
-                    send_message["value"] = result
-                    websockets.broadcast(connected, json.dumps(send_message))
+                        result = predicciones(user_songs)
+                        send_message = {}
+                        send_message["type"] = "SONGS_PROCESSED"
+                        send_message["value"] = result
+                        websockets.broadcast(connected, json.dumps(send_message))
+                        downloadYouTube(result[len(result)-1])
+                        add_to_playlist(result)
 
-                elif dictio["type"] == "PROCESS_FAKE_SONGS":
-                   	
-                    print("Processing fake songs...")
+                    elif dictio["type"] == "PROCESS_FAKE_SONGS":
 
-                    prueba = [{"song":"Malamente","singer":"Rosalia","country":"Moldova"},
-                      {"song":"Volcans","singer":"Buhos","country":"Iceland"},
-                      {"song":"Uptown Funk","singer":"Bruno Mars","country":"Austria"},
-                      {"song":"As it was","singer":"Harry Styles","country":"Albania"},
-                      {"song":"Zumo de Mandrágora","singer":"Piter-G","country":"United Kingdom"},
-                      {"song":"Gangstas Paradise","singer":"Coolio","country":"Italy"},
-                      {"song":"Provenza","singer":"Karol G","country":"Cyprus"},
-                      {"song":"Mon Amour Remix","singer":"Aitana Zzoilo","country":"France"},
-                      {"song":"Don't go yet","singer":"Camila Cabello","country":"Greece"},
-                      {"song":"Ya no quiero na","singer":"Lola Indigo","country":"Spain"},
-                      {"song":"Better man","singer":"Paolo Nutini","country":"Sweden"},
-                      {"song":"Camaleón","singer":"Belén Aguilera","country":"Denmark"},
-                      {"song":"Crush","singer":"Daft Punk","country":"Lithuania"},
-                      {"song":"La mujer de verde","singer":"Izal","country":"Ukraine"},
-                      {"song":"Condolence","singer":"Benjamin Clementine","country":"Poland"},
-                      {"song":"Pump and the jam","singer":"Technotronic","country":"Malta"},
-                      {"song":"Me quedo contigo","singer":"Los chunguitos","country":"Israel"},
-                      {"song":"Mi religión","singer":"Nil Moliner","country":"Bulgaria"}]
+                        print("Processing fake songs...")
 
-                    result = predicciones(prueba)
-                    send_message = {}
-                    send_message["type"] = "SONGS_PROCESSED"
-                    send_message["value"] = result
-                    websockets.broadcast(connected, json.dumps(send_message))
+                        prueba = [{"song":"Dance alone","singer":"Blanks","country":"Germany","manager":"Nony"},
+                  {"song":"Dirty Diana","singer":"Michael Jackson","country":"Spain","manager":"Rocío"},
+                  {"song":"Warriors","singer":"Imagine Dragons","country":"Sweden","manager":"Miguel Beitia"},
+                  {"song":"Shape of You","singer":"Ed Sheeran ","country":"Albania","manager":"Vito"},
+                  {"song":"Humble","singer":"Kendrick lamar","country":"Switzerland","manager":"Santi :3"},
+                  {"song":"Waka waka","singer":"Shakira","country":"Croatia","manager":"Pepo"},
+                  {"song":"Bzr music session ","singer":"Quevedo","country":"Ukraine","manager":"Marta Salvador"},
+                  {"song":"Tears","singer":"Clean Bandit","country":"United Kingdom","manager":"Cesar"},
+                  {"song":"Nothing else matters","singer":"Metallica","country":"Belgium","manager":"Nelsy"},
+                  {"song":"Un golpe de suerte","singer":"Carmen boza","country":"Slovakia","manager":"Mar ;)"},
+                  {"song":"La macarena","singer":"Los del rio","country":"Bosnia and Herzegovina","manager":"Inés ba"},
+                  {"song":"Despacito ","singer":"Luís Fonsi ","country":"Russia","manager":"Julsssss"},
+                  {"song":"Bang bang","singer":"Delaporte","country":"Cyprus","manager":"Unknown"},
+                  {"song":"Nothing ese matter","singer":"metallica","country":"Andorra","manager":"Ser"},
+                  {"song":"2 Die 4","singer":"Tove Lo","country":"Denmark","manager":"RoberCA"},
+                  {"song":"Outrun","singer":"Reckless Love","country":"Finland","manager":"Cesar"},
+                  {"song":"Ateo","singer":"C tangana","country":"Czech Republic","manager":"Marta"},
+                  {"song":"Zapatillas ","singer":"ECDL","country":"Italy","manager":"DaniM"},
+                  {"song":"Under the pressure ","singer":"The war on drugs","country":"Montenegro","manager":"Unknown"},
+                  {"song":"Despechá","singer":"Rosalia","country":"Greece","manager":"Abel"},
+                  {"song":"Saraluna","singer":"Melendi","country":"Armenia","manager":"Melendi for president"},
+                  {"song":"Motomami","singer":"Rosalia","country":"Slovenia","manager":"Javier lázaro"},
+                  {"song":"Moscow mule ","singer":"Bad bunny ","country":"Georgia","manager":"David pardo"},
+                  {"song":"Elnvolver","singer":"Anitta","country":"Portugal","manager":"Jadde"},
+                  {"song":"Motomami","singer":"Rosalia","country":"Hungary","manager":"José Manuel"},
+                  {"song":"Canta juegos","singer":"Disney","country":"Lithuania","manager":"Raffa"},
+                  {"song":"YOUNGER NOW","singer":"Miley Cyrus","country":"France","manager":"CJ Ramirez"},
+                  {"song":"Cheap thrills","singer":"Sia","country":"Australia","manager":"Nhoa"},
+                  {"song":"Nothing breaks like a heart","singer":"Miley Cyrus","country":"Estonia","manager":"Maria Miño"},
+                  {"song":"Metallica ","singer":"Yung Beef","country":"Austria","manager":"Unknown"},
+                  {"song":"Superman","singer":"Bustamante","country":"Azerbaijan","manager":"Unknown"},
+                  {"song":"A todos mis amantes","singer":"Rigoberto Bandini","country":"Norway","manager":"Noemí"},
+                  {"song":"Mocatriz","singer":"Ojete Calor","country":"Belarus","manager":"Lucia"},
+                  {"song":"Paris","singer":"Morat","country":"Bulgaria","manager":"Arturo"},
+                  {"song":"Saoko","singer":"Rosalía","country":"Ireland","manager":"Pedro Suárez "},
+                  {"song":"Enemy","singer":"Imagine dragons","country":"Iceland","manager":"Marina UX"},
+                  {"song":"Quevedo","singer":"C. Tangana","country":"Romania","manager":"Silvia"},
+                  {"song":"Clarity","singer":"Zedd feat Roses","country":"Israel","manager":"Manuel"},
+                  {"song":"Lalalala","singer":"Andrés Carlos ","country":"Poland","manager":"Unknown"},
+                  {"song":"Paradise","singer":"Coldplay","country":"Monaco","manager":"Iñigo"},
+                  {"song":"Thriller","singer":"Michael Jackson","country":"San Marino","manager":"Laura"},
+                  {"song":"Fiesta pagana ","singer":"Mago de Oz","country":"The Netherlands","manager":"Gonzalo"},
+                  {"song":"Imagine","singer":"Beatles ","country":"Moldova","manager":"Alerg"},
+                  {"song":"Yonaguni","singer":"Bad Bunny","country":"Latvia","manager":"Sharon"},
+                  {"song":"Flying free","singer":"Pont aeri","country":"Serbia and Montenegro","manager":"Alex"},
+                  {"song":"Mountain at my gates","singer":"Foals","country":"North Macedonia","manager":"Chris"},
+                  {"song":"Hey Mor","singer":"Feid","country":"Turkey","manager":"Juan Cardenas"},
+                  {"song":"Here comes the sun ","singer":"The Beatles ","country":"Serbia","manager":"Carolina"},
+                  {"song":"Wanabee","singer":"Spice girls ","country":"Malta","manager":"Catalina"}]
+
+                        result = predicciones(prueba)
+                        send_message = {}
+                        send_message["type"] = "SONGS_PROCESSED"
+                        send_message["value"] = result
+                        websockets.broadcast(connected, json.dumps(send_message))
+                        downloadYouTube(result[len(result)-1])
+                        add_to_playlist(result)
+                else:
+                    print("Han intentado hackear...")
 
         except websockets.exceptions.ConnectionClosed as e:
             print("A client just disconnected")
@@ -457,7 +538,7 @@ async def handler(websocket):
 
 async def main():
     async with websockets.serve(handler, "", 8001):
-        print("Estoy en async")
+        print("WELCOME")
         await asyncio.Future()  # run forever
 
 
