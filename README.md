@@ -120,21 +120,19 @@ Reputación (p-value: 3.2714025148511657e-19)
 ## SCRAPPEO EN CALIENTE
 #### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las conversiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
 
-Recibimos canciones: Usamos websockets y una interfaz web propia.
+⤵️ Recibimos canciones: Usamos websockets y una interfaz web propia.
 
-BeautifulSoup: Youtube -> Likes, Views.
+🔎 BeautifulSoup: Youtube -> Likes, Views.
+🔎 Llamada a API: Shazam -> Shazams.
+🔎 Llamada a API: Spotify -> Creación playlist.
+🔎 Cruce con BBDD: Bets -> Bet_mean por país.
+🔎 Cruce con BBDD: País -> Comportamiento del país elegido 2004-2022
 
-Llamada a API: Shazam -> Shazams.
-
-Cruce con BBDD: Bets -> Bet_mean por país.
-
-Transformaciones: Creamos proporciones.
-
-Predicciones.
-
-Creamos ranking: Volcamos resultados en la interfaz web.
-Embebemos el video del ganador: Usamos Pytube.
-Creamos lista de Spotify: Usamos la API para buscar y añadir las canciones propuestas.
+🔃 Transformaciones: Creamos proporciones.
+🤔 Predicciones.
+📝 Creamos ranking: Volcamos resultados en la interfaz web.
+▶️ Embebemos el video del ganador: Usamos Pytube.
+🎵 Creamos lista de Spotify: Usamos la API para buscar y añadir las canciones propuestas.
 
 
 
