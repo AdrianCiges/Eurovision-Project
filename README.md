@@ -123,15 +123,23 @@ Reputación (p-value: 3.2714025148511657e-19)
 ⤵️ Recibimos canciones: Usamos websockets y una interfaz web propia.
 
 🔎 BeautifulSoup: Youtube -> Likes, Views.
+
 🔎 Llamada a API: Shazam -> Shazams.
+
 🔎 Llamada a API: Spotify -> Creación playlist.
+
 🔎 Cruce con BBDD: Bets -> Bet_mean por país.
+
 🔎 Cruce con BBDD: País -> Comportamiento del país elegido 2004-2022
 
 🔃 Transformaciones: Creamos proporciones.
+
 🤔 Predicciones.
+
 📝 Creamos ranking: Volcamos resultados en la interfaz web.
+
 ▶️ Embebemos el video del ganador: Usamos Pytube.
+
 🎵 Creamos lista de Spotify: Usamos la API para buscar y añadir las canciones propuestas.
 
 
