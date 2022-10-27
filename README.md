@@ -122,7 +122,7 @@ Reputación (p-value: 3.2714025148511657e-19)
 
 Recibimos canciones: Usamos websockets y una interfaz web propia.
 
-BeautifulSoup: Yotube -> Likes, Views.
+BeautifulSoup: Youtube -> Likes, Views.
 
 Llamada a API: Shazam -> Shazams.
 
@@ -133,6 +133,8 @@ Transformaciones: Creamos proporciones.
 Predicciones.
 
 Creamos ranking: Volcamos resultados en la interfaz web.
+Embebemos el video del ganador: Usamos Pytube.
+Creamos lista de Spotify: Usamos la API para buscar y añadir las canciones propuestas.
 
 
 
