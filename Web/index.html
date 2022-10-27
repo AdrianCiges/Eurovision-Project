@@ -54,6 +54,11 @@
                     <label class="form-label" for="inputSinger">Cantante</label>
                   </div>
 
+                  <div class="form-outline mb-3">
+                    <input type="text" id="inputManager" class="form-control form-control-lg" />
+                    <label class="form-label" for="inputManager">Manager</label>
+                  </div>
+
                   <div class="form-outline mb-4">
                     <select class="form-select" id="country" aria-label="Default select example">
                       <option value="Albania">Albania</option>
@@ -135,6 +140,7 @@
       song: document.getElementById('inputSong').value,
       singer: document.getElementById('inputSinger').value,
       country: document.getElementById('country').value,
+	manager: document.getElementById('inputManager').value,
     }
     let message = {
       type: "SONG_CREATED",

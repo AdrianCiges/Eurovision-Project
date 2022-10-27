@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eurovision</title>
   <!-- Font Awesome -->
   <link
@@ -30,20 +31,25 @@
       <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
           <div class="card">
-            <div class="card-body p-5">
+            <div class="card-body">
 
-              <div class="row d-flex align-items-center">
-                <div class="col-md-6 col-xl-7">
+              <div class="row d-flex my-md-5">
+                <div class="col-md-6 col-xl7" id="videoContent">
 
-                  <div class="text-center pt-md-5 pb-5 my-md-5" style="padding-right: 24px;">
+                  <div id="microphone" class="text-center pb-5" style="padding-right: 24px;">
                     <i class="fas fa-microphone-lines" style="color: #D6D6D6;"></i>
                   </div>
 
                 </div>
-                <div class="col-md-6 col-xl-4 text-center">
+                <div class="col-md-6 col-xl-4 text-center flex-grow-1">
 
                   <h2 id="title" class="fw-bold mb-4 pb-2">Gracias por añadir tu canción</h2>
                   <h5 id="waitingMsg" class="fw-bold mb-4 pb-2">Esperando la predicción de resultados...</h5>
+			<div id="spotylink" class="mb-3 visually-hidden">
+			  <a href="https://open.spotify.com/playlist/0FNPhJSRpD4mdq0gDEDVWf" target="_blank" style="color:mediumblue;">
+			    <img src="img/spoty_icono_web.png" style="width:30px;"/> Escucha la lista en Spotify
+			  </a>
+			</div>
 
                   <div style="text-align: left">
                     <ul class="list-group list-group-light" id="songsList"></ul>
@@ -74,8 +80,23 @@
     setTimeout(() => {
       const winner = songs[songs.length-1];
       document.getElementById('waitingMsg').classList.add('visually-hidden');
-      document.getElementById('title').innerText = '¡¡¡Enhorabuena a '+winner.country+' - '+winner.song + '!!!';
-    }, timeToShow + ((songs.length-2) * 4000))
+      document.getElementById('title').innerHTML = '¡¡¡Enhorabuena a '+winner.manager+' ('+winner.country+')<br>'+winner.song + '!!!';
+	  document.getElementById('spotylink').classList.remove('visually-hidden');
+
+      document.getElementById('microphone').classList.add('visually-hidden');
+
+
+
+      document.getElementById('videoContent').innerHTML =
+      '<video id="winnerVideo" style="width: 100%" height="300" controls>\n' +
+      '  <source src="media/winner.mp4" type="video/mp4">\n' +
+      '    Your browser does not support the video tag. \n' +
+      '</video>';
+
+      document.getElementById('winnerVideo').play();
+
+
+    }, timeToShow + ((songs.length-2) * 500))
     document.getElementById('songsList').innerHTML = '';
 
     songs.forEach((song, index) => {
@@ -86,7 +107,7 @@
                 '<li class="list-group-item d-flex justify-content-between align-items-start animation fade-in">\n' +
                 '                        <div class="ms-2 me-auto">\n' +
                 '                          <div class="fw-bold">'+(songs.length - index) + '. - '+ song.country+' - '+song.song+'</div>\n' +
-                '                          '+song.singer+'\n' +
+                '                          '+song.singer+' - ' +song.manager+'\n'+
                 '                        </div>\n' +
                 '                        <span class="badge badge-primary rounded-pill">'+song.points+'</span>\n' +
                 '                      </li>' + html;
@@ -94,7 +115,7 @@
         document.getElementById('songsList').innerHTML = html;
       }, timeToShow)
       if(index < songs.length-2) {
-        timeToShow += 4000;
+        timeToShow += 500;
       }
     })
   }
