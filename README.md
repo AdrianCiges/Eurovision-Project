@@ -1,6 +1,16 @@
 # Eurovision-Project🎙️
+## CONTENIDO
+[1 - Extracción, Teansformación y Carga ⚙️](#ETL) <br />
+[2 - Contrastes de Hipótesis - ANOVA 📈](#CH)<br />
+[3 - Feature Importances 🔝](#FI)<br />
+[4 - Machine Learning 🤖](#ML)<br />
+[5 - Scrappeo en Caliente 🔥](#SC)<br />
+ 
+   
 
-## ETL 🛠️
+
+
+## 1 - EXTRACCIÓN, TRANSFORMACIÓN Y CARGA ⚙️ <a name="ETL"/>
 ### Obtenemos datos de diferentes fuentes (9) utilizando 4 métodos de extracción.
 🎶 Scrappeo Spotify: Duraciones Canciones.
 
@@ -23,9 +33,11 @@
 💲 Scrappeo Apuestas: Quostas por año
 
 #### To_SQL: Creamos BBDD + relaciones.
+  ![Relacion SQL](https://user-images.githubusercontent.com/109532909/199720601-ac85abec-89a8-4f27-b560-5d8d60c43d11.jpg)
+
 #
 
-## CONTRASTES HIPÓTESIS - ANOVA 📈
+## 2 - CONTRASTES HIPÓTESIS - ANOVA 📈 <a name="CH"/>
 
 ### ❌ Variables Descartadas:
 • Long_letra (p-value: 0.8673152099225407)
@@ -64,7 +76,7 @@
 
 • Reputación (p-value: 3.2714025148511657e-19)
 #
-## FEATURE IMPORTANCES 🔝
+## 3 - FEATURE IMPORTANCES 🔝 <a name="FI"/>
 ### Calculamos pesos de las variables en el cálculo de los puntos (proporción de puntos máximos obtenidos en su edición).
 
 🟢 58% - Likes 
@@ -106,7 +118,7 @@
 #### Nos quedamos con las 5 primeras, con las que explicamos el 84% de la varianza.
 #
 
-## MACHINE LEARNING 🤖
+## 4 - MACHINE LEARNING 🤖 <a name="ML"/>
 
 🗑️ Drop 2002/2003: Incoherencia comportamiento de las variables clave (YouTube no existía, comportamiento muy a posteriori)
 
@@ -117,7 +129,7 @@
 🤔 Predecimos: Revisamos errores y no son críticos (canciones que sorprendieron en puesta en escena, no predecible).
 
 #
-## SCRAPPEO EN CALIENTE 🔥
+## 5 - SCRAPPEO EN CALIENTE 🔥 <a name="SC"/>
 #### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las conversiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
 
 ⤵️ Recibimos canciones: Usamos websockets y una interfaz web propia.
