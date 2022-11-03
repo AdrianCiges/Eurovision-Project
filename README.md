@@ -1,16 +1,30 @@
 # Eurovision-Project🎙️
-## CONTENIDO
-[1 - Extracción, Teansformación y Carga ⚙️](#ETL) <br />
-[2 - Contrastes de Hipótesis - ANOVA 📈](#CH)<br />
-[3 - Feature Importances 🔝](#FI)<br />
-[4 - Machine Learning 🤖](#ML)<br />
-[5 - Scrappeo en Caliente 🔥](#SC)<br />
+## CONTENIDO 📑
+[1 - Objetivo 🎯](#O)<br />
+[2 - Extracción, Transformación y Carga ⚙️](#ETL) <br />
+[3 - Contrastes de Hipótesis - ANOVA 📈](#CH)<br />
+[4 - Feature Importances 🔝](#FI)<br />
+[5 - Machine Learning 🤖](#ML)<br />
+[6 - Scrappeo en Caliente 🔥](#SC)<br />
  
-   
+## 1 - OBJETIVO 🎯<a name="O"/>   
+💥 Construir un modelo de machine learning capaz de aproximar la cantidad de puntos que obtendrá una canción en Eurovisión con el menor error posible, entendiendo el planteamiento como una analogía de la predicción de un beneficio (puntos) para un producto (canción) en un mercado (Eurovisión).<br />
+
+💥 Crear la estructura programática capaz de:<br />
+
+&emsp; &emsp; • Escrappear en vivo para encontrar las variables clave para las canciones propuestas por la audiencia durante la exposición del trabajo.<br />
+&emsp; &emsp; • Predecir las puntuaciones de las canciones propuestas.<br />
+&emsp; &emsp; • Clasificar las canciones y mostrar el resultado en una interfaz web.<br />
+&emsp; &emsp; • Embeber el video de YouTube del ganador en la interfaz web para que se reproduzca su videoclip.<br />
+&emsp; &emsp; • Crear una lista de Spotify ordenada según la clasificación. <br />
+
+💥 Emplear todos los conceptos y herramientas posibles en el campo del análisis de datos:<br />
+
+&emsp;&emsp;&emsp;<img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/python.webp" width="25" height="25">&emsp;<img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/pandas.png" width="22" height="30">      <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/sql.png" width="43" height="25">     &nbsp;<img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/selenium.png" width="23" height="25">      &nbsp;&nbsp;  <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/bs4.jpg" width="23" height="25">&nbsp;&nbsp;      <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/mongoDB.jpg" width="10" height="25">        &nbsp;&nbsp;     <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/powerBI.png" width="16" height="25">     &nbsp;&nbsp;      <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/html.png" width="20" height="25">&nbsp;&nbsp; <img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/wesockets.png" width="20" height="25">  &nbsp;&nbsp;<img src="https://github.com/AdrianCiges/Eurovision-Project/blob/main/Images/aws.png" width="25" height="25">
 
 
 
-## 1 - EXTRACCIÓN, TRANSFORMACIÓN Y CARGA ⚙️ <a name="ETL"/>
+## 2 - EXTRACCIÓN, TRANSFORMACIÓN Y CARGA ⚙️ <a name="ETL"/>
 ### Obtenemos datos de diferentes fuentes (9) utilizando 4 métodos de extracción.
 🎶 Scrappeo Spotify: Duraciones Canciones.
 
@@ -37,7 +51,7 @@
 
 #
 
-## 2 - CONTRASTES HIPÓTESIS - ANOVA 📈 <a name="CH"/>
+## 3 - CONTRASTES DE HIPÓTESIS - ANOVA 📈 <a name="CH"/>
 
 ### ❌ Variables Descartadas:
 • Long_letra (p-value: 0.8673152099225407)
@@ -76,7 +90,7 @@
 
 • Reputación (p-value: 3.2714025148511657e-19)
 #
-## 3 - FEATURE IMPORTANCES 🔝 <a name="FI"/>
+## 4 - FEATURE IMPORTANCES 🔝 <a name="FI"/>
 ### Calculamos pesos de las variables en el cálculo de los puntos (proporción de puntos máximos obtenidos en su edición).
 
 🟢 58% - Likes 
@@ -118,7 +132,7 @@
 #### Nos quedamos con las 5 primeras, con las que explicamos el 84% de la varianza.
 #
 
-## 4 - MACHINE LEARNING 🤖 <a name="ML"/>
+## 5 - MACHINE LEARNING 🤖 <a name="ML"/>
 
 🗑️ Drop 2002/2003: Incoherencia comportamiento de las variables clave (YouTube no existía, comportamiento muy a posteriori)
 
@@ -129,7 +143,7 @@
 🤔 Predecimos: Revisamos errores y no son críticos (canciones que sorprendieron en puesta en escena, no predecible).
 
 #
-## 5 - SCRAPPEO EN CALIENTE 🔥 <a name="SC"/>
+## 6 - SCRAPPEO EN CALIENTE 🔥 <a name="SC"/>
 #### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las conversiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
 
 ⤵️ Recibimos canciones: Usamos websockets y una interfaz web propia.
