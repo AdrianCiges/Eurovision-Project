@@ -1,6 +1,6 @@
-# Eurovision-Project
+# Eurovision-Project🎙️
 
-## ETL
+## ETL 🛠️
 ### Obtenemos datos de diferentes fuentes (9) utilizando 4 métodos de extracción.
 🎶 Scrappeo Spotify: Duraciones Canciones.
 
@@ -25,46 +25,46 @@
 #### To_SQL: Creamos BBDD + relaciones.
 #
 
-## CONTRASTES HIPÓTESIS - ANOVA
+## CONTRASTES HIPÓTESIS - ANOVA 📈
 
 ### ❌ Variables Descartadas:
-Long_letra (p-value: 0.8673152099225407)
+• Long_letra (p-value: 0.8673152099225407)
 
-Palabras_unicas (p-value: 0.9884527360000015)
+• Palabras_unicas (p-value: 0.9884527360000015)
 
-TopXword (p-values: 0.21505231118604684, 0.09844530444268441, 0.01598411707225454, 0.19357596722868317, 0.2542394961748323)
+• TopXword (p-values: 0.21505231118604684, 0.09844530444268441, 0.01598411707225454, 0.19357596722868317, 0.2542394961748323)
 
-Love_Song (p-value: 0.8066218076621867)
+• Love_Song (p-value: 0.8066218076621867)
 
-Estilos (p-value: 0.45298703184253064)
+• Estilos (p-value: 0.45298703184253064)
 
-Duración (p-value: 0.13854202270049623)
+• Duración (p-value: 0.13854202270049623)
 
-Estructura (p-value: 0.5701535767818893)
+• Estructura (p-value: 0.5701535767818893)
 
 ### ✅ Variables Aceptadas:
 
-País (p-value: 4.1131692326935207e-22)
+• País (p-value: 4.1131692326935207e-22)
 
-Idioma (p-value: 3.108737845707387e-61)
+• Idioma (p-value: 3.108737845707387e-61)
 
-Vecinos_participantes (p-value: 3.2383465489737635e-05)
+• Vecinos_participantes (p-value: 3.2383465489737635e-05)
 
-Orden_actuación (p-value: 3.2840140679963695e-05)
+• Orden_actuación (p-value: 3.2840140679963695e-05)
 
-Views YT (p-value: 4.382697943679727e-34)
+• Views YT (p-value: 4.382697943679727e-34)
 
-Likes YT (p-value: 1.9082415647254428e-38)
+• Likes YT (p-value: 1.9082415647254428e-38)
 
-Shazams (p-value: 1.2168547861362296e-35)
+• Shazams (p-value: 1.2168547861362296e-35)
 
-GDP (p-value: 6.825147423918337e-06)
+• GDP (p-value: 6.825147423918337e-06)
 
-Influencia (p-value: 1.1826196448829346e-16)
+• Influencia (p-value: 1.1826196448829346e-16)
 
-Reputación (p-value: 3.2714025148511657e-19)
+• Reputación (p-value: 3.2714025148511657e-19)
 #
-## FEATURE IMPORTANCES
+## FEATURE IMPORTANCES 🔝
 ### Calculamos pesos de las variables en el cálculo de los puntos (proporción de puntos máximos obtenidos en su edición).
 
 🟢 58% - Likes 
@@ -106,7 +106,7 @@ Reputación (p-value: 3.2714025148511657e-19)
 #### Nos quedamos con las 5 primeras, con las que explicamos el 84% de la varianza.
 #
 
-## MACHINE LEARNING
+## MACHINE LEARNING 🤖
 
 🗑️ Drop 2002/2003: Incoherencia comportamiento de las variables clave (YouTube no existía, comportamiento muy a posteriori)
 
@@ -117,7 +117,7 @@ Reputación (p-value: 3.2714025148511657e-19)
 🤔 Predecimos: Revisamos errores y no son críticos (canciones que sorprendieron en puesta en escena, no predecible).
 
 #
-## SCRAPPEO EN CALIENTE
+## SCRAPPEO EN CALIENTE 🔥
 #### Contruimos la arquitectura para el scrappeo en caliente con intención de obtener las variables clave de un número X de canciones de manera instantánea, realizar las conversiones pertinentes de las mismas, predecir puntuaciones y elaborar un ranking en vivo.
 
 ⤵️ Recibimos canciones: Usamos websockets y una interfaz web propia.
