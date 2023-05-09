@@ -44,7 +44,7 @@
 
 🔎 Scrappeo Shazam: Estilo, shazams
 
-💲 Scrappeo Apuestas: Quostas por año
+💲 Scrappeo Apuestas: Quotas por año
 
 #### To_SQL: Creamos BBDD + relaciones.
   ![Relacion SQL](https://user-images.githubusercontent.com/109532909/199720601-ac85abec-89a8-4f27-b560-5d8d60c43d11.jpg)
